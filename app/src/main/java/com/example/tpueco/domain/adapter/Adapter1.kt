@@ -1,4 +1,4 @@
-package com.example.testovoegit
+package com.example.tpueco.domain.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.testovoegit.Model.UserResponse
+import com.example.tpueco.R
 import com.squareup.picasso.Picasso
-import android.text.method.TextKeyListener.clear as clear1
-
+/**
 class Adapter1( var context: Context ): RecyclerView.Adapter<Adapter1.MainViewHolder>() {
 
      lateinit var userList: MutableList<UserResponse>
@@ -64,3 +63,4 @@ fun setData(userResponse: UserResponse){
 
 
 }
+ **/

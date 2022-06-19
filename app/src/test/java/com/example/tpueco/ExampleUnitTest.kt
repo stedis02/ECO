@@ -1,4 +1,4 @@
-package com.example.testovoegit
+package com.example.tpueco
 
 import org.junit.Test
 
