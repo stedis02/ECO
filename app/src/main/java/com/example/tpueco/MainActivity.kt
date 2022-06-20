@@ -1,19 +1,20 @@
 package com.example.tpueco
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.webkit.WebView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.presentation.VM.MainViewModel
 ///import com.example.tpueco.presentation.Adapter1
 import com.example.tpueco.presentation.StartBrowserAtivity
+import com.example.tpueco.presentation.fragment.DocumentCameraFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
@@ -34,6 +35,8 @@ class MainActivity : AppCompatActivity() {
             } else {
             }
         })
+
+
     }
 
 
@@ -41,8 +44,20 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    fun Click1(view: View) {}
+    fun Click1(view: View) {
 
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerMain, DocumentCameraFragment.newInstance())
+            .commitNow()
+
+    }
+    fun Click2(view: View) {
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerMain, DocumentCameraFragment.newInstance())
+            .commitNow()
+
+    }
 
     fun getTokenIfBDNull() {
         if (App.fullUserTokenUrl == "") {
@@ -70,4 +85,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+
+
 }
