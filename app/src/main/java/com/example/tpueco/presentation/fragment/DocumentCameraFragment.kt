@@ -1,6 +1,7 @@
 package com.example.tpueco.presentation.fragment
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.Image
@@ -10,6 +11,7 @@ import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -18,17 +20,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.tpueco.R
 import com.example.tpueco.domain.tools.camera.YUVtoRGB
+import com.example.tpueco.presentation.CameraActivity
 import com.example.tpueco.presentation.VM.DocumentCameraViewModel
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
 
 
-class DocumentCameraFragment : Fragment() {
+class DocumentCameraFragment : Fragment(), View.OnClickListener {
 
-    private var imageCapture: ImageCapture? = null
-
-
-    private lateinit var cameraExecutor: ExecutorService
 
 
     companion object {
@@ -47,8 +46,27 @@ class DocumentCameraFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(DocumentCameraViewModel::class.java)
+        val openCamera: Button = requireView().findViewById(R.id.openCamera)
+        openCamera.setOnClickListener(this)
+    }
+
+
+    override fun onClick(p0: View?) {
+
+        if (translateIdToIndex(p0!!.id) == 1) {
+            var intent = Intent(requireContext(), CameraActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
+    private fun translateIdToIndex(id: Int): Int {
+        var index = -1
+        when (id) {
+            R.id.openCamera -> index = 1
+
+        }
+        return index
+    }
 
 }

@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestovoeGit" >
         <activity
-            android:name=".CameraActivity"
+            android:name=".presentation.CameraActivity"
             android:exported="false"
             android:label="@string/title_activity_camera"
             android:theme="@style/Theme.TestovoeGit.NoActionBar" />
