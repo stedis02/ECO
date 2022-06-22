@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.tpueco.R
+import com.example.tpueco.domain.tools.Document.DocumentManager
 import com.example.tpueco.domain.tools.camera.YUVtoRGB
 import com.example.tpueco.presentation.CameraActivity
 import com.example.tpueco.presentation.VM.DocumentCameraViewModel
@@ -54,6 +55,7 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
     override fun onClick(p0: View?) {
 
         if (translateIdToIndex(p0!!.id) == 1) {
+
             var intent = Intent(requireContext(), CameraActivity::class.java)
             startActivity(intent)
         }
