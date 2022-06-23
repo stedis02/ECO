@@ -3,17 +3,18 @@ package com.example.tpueco.presentation
 import android.Manifest
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
+import android.graphics.pdf.PdfDocument
+import android.graphics.pdf.PdfDocument.PageInfo
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -21,17 +22,17 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.tpueco.MainActivity
-import com.example.tpueco.R
 import com.example.tpueco.databinding.ActivityCameraBinding
-import com.example.tpueco.databinding.ActivityMainBinding
 import com.example.tpueco.domain.tools.Document.DocumentManager
-import com.example.tpueco.presentation.VM.StartBrowserViewModel
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
 
 typealias LumaListener = (luma: Double) -> Unit
 
@@ -59,15 +60,15 @@ class CameraActivity : AppCompatActivity() {
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
             )
         }
-
-        // Set up the listeners for take photo and video capture buttons
-        //  viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+
+
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun takePhoto() {
+
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -119,7 +120,7 @@ class CameraActivity : AppCompatActivity() {
                 //get bitmap from image
                 val bitmap = imageProxyToBitmap(image)
                 super.onCaptureSuccess(image)
-
+               documentManager.generatePdf(applicationContext, bitmap)
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -184,6 +185,7 @@ class CameraActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun makePhoto(view: View) {
         takePhoto()
+
     }
 
     override fun onDestroy() {
@@ -205,5 +207,9 @@ class CameraActivity : AppCompatActivity() {
                 }
             }.toTypedArray()
     }
+
+
+
+
 
 }
