@@ -17,15 +17,20 @@ import java.io.IOException
 import java.io.*
 
 class DocumentManager {
-    fun generatePdf(context: Context ,bitmap: Bitmap) {
-        val  pdfDoc = PdfDocument()
+    fun addPageToDocumentPdf(context: Context , pdfDocument: PdfDocument , pageNumber: Int, bitmap: Bitmap) {
         val paint = Paint()
-        val pageInfo = PdfDocument.PageInfo.Builder(4000, 3000, 1).create()
-        var page1 = pdfDoc.startPage(pageInfo)
+        val pageInfo = PdfDocument.PageInfo.Builder(3000, 4000, pageNumber).create()
+        var page1 = pdfDocument.startPage(pageInfo)
         var canvas = page1.canvas
-        canvas.drawBitmap(bitmap, 0.0f, 0.0f, paint)
-        pdfDoc.finishPage(page1)
-        val fileName = "TestFile.pdf"
+        var matrix = Matrix()
+        matrix.postRotate(90.0f)
+        var bitmapRot = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        canvas.drawBitmap(bitmapRot, 0.0f, 0.0f, paint)
+        pdfDocument.finishPage(page1)
+
+    }
+
+    fun saveDocumentPdf(context: Context, pdfDocument: PdfDocument, fileName: String){
         val outputStream = if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
             val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             val file = File(directory, fileName)
@@ -41,11 +46,7 @@ class DocumentManager {
                 resolver.openOutputStream(it)
             }
         }
-        // outputStream?.use { stream ->
-        //     stream.write("DDD".encodeToByteArray())
-        // }
-        pdfDoc.writeTo(outputStream)
-        pdfDoc.close()
+        pdfDocument.writeTo(outputStream)
     }
 }
 

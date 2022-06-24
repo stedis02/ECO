@@ -1,6 +1,7 @@
 package com.example.tpueco.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
@@ -22,6 +24,8 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationRequestCompat
+import androidx.lifecycle.LifecycleOwner
 import com.example.tpueco.databinding.ActivityCameraBinding
 import com.example.tpueco.domain.tools.Document.DocumentManager
 import java.io.File
@@ -34,18 +38,17 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
-typealias LumaListener = (luma: Double) -> Unit
-
-var documentManager = DocumentManager()
-
 class CameraActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityCameraBinding
     lateinit var context: Context
     private var imageCapture: ImageCapture? = null
+    val pdfDocument = PdfDocument()
+    var pageNumber = 1
+    var documentManager = DocumentManager()
 
 
-    private lateinit var cameraExecutor: ExecutorService
+    private val executor = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,77 +63,33 @@ class CameraActivity : AppCompatActivity() {
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
             )
         }
-        cameraExecutor = Executors.newSingleThreadExecutor()
+
     }
 
-
-
-
-    @RequiresApi(Build.VERSION_CODES.N)
     private fun takePhoto() {
-
-        // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
-
-        // Create time stamped name and MediaStore entry.
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-            .format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Eco")
-            }
-        }
-
-        // Create output options object which contains file + metadata
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(
-                contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
-            .build()
-
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                }
-
-                override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
-                }
-            }
-        )
-
-
-        //   перевод изображения в битмап
-        imageCapture.takePicture(cameraExecutor, object :
+        imageCapture.takePicture(executor, object :
             ImageCapture.OnImageCapturedCallback() {
+            @SuppressLint("UnsafeExperimentalUsageError")
             override fun onCaptureSuccess(image: ImageProxy) {
-                //get bitmap from image
                 val bitmap = imageProxyToBitmap(image)
-                super.onCaptureSuccess(image)
-               documentManager.generatePdf(applicationContext, bitmap)
+                image.close()
+                documentManager.addPageToDocumentPdf(
+                    applicationContext,
+                    pdfDocument,
+                    pageNumber,
+                    bitmap
+                )
+                pageNumber++
+                Log.v("сука", "page ${pageNumber}")
             }
-
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
+                Log.v("сука", "page хуйня какая-то")
             }
-
         })
     }
 
-    // imageProxyToBitmap
     private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
         val planeProxy = image.planes[0]
         val buffer: ByteBuffer = planeProxy.buffer
@@ -140,38 +99,23 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this@CameraActivity)
         cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            // Preview
-            val preview = Preview.Builder()
-                .build()
+            val preview = Preview.Builder().build()
                 .also {
                     it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
                 }
-
-            imageCapture = ImageCapture.Builder()
-                .build()
-
-            // Select back camera as a default
+            imageCapture = ImageCapture.Builder().setJpegQuality(10).build()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
-
-                // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
+                    this@CameraActivity, cameraSelector, preview, imageCapture
                 )
-
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -181,35 +125,31 @@ class CameraActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.N)
     fun makePhoto(view: View) {
         takePhoto()
+    }
 
+    fun saveDocument(view: View) {
+        documentManager.saveDocumentPdf(applicationContext, pdfDocument, "Pen.pdf")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
+        executor.isShutdown
+        pdfDocument.close()
     }
 
     companion object {
         private const val TAG = "Camera"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val REQUEST_CODE_PERMISSIONS = 10
+        private const val REQUEST_CODE_PERMISSIONS = 11
         private val REQUIRED_PERMISSIONS =
             mutableListOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
             }.toTypedArray()
     }
-
-
-
-
-
 }
