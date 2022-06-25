@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         init()
-        tokenAvailabilityCheck()
+        getDataFromUsersAPI()
         mainViewModel.dataReceiptCheck.observe(this, Observer {
             if (it == true) {
                 dbManager.dbInsertTokenData(
@@ -75,16 +75,19 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.init()
     }
 
-    fun tokenAvailabilityCheck() {
-        if (dbManager.getTokenData().access_token == null || dbManager.getTokenData().access_token == "null" || dbManager.getTokenData().access_token == "access_token") {
-            getTokenIfBDNull()
-        } else {
-            mainViewModel.getUserData(
-                (application as App).usersAPI,
-                "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token=${dbManager.getTokenData().access_token.toString()}"
-            )
-        }
+fun getDataFromUsersAPI(){
+    if(tokenAvailabilityCheck()){
+        mainViewModel.getUserData(
+            (application as App).usersAPI,
+            "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token=${dbManager.getTokenData().access_token.toString()}"
+        )
+    }else{
+        getTokenIfBDNull()
     }
+}
 
+    fun tokenAvailabilityCheck() : Boolean {
+    return !(dbManager.getTokenData().access_token == null || dbManager.getTokenData().access_token == "null" || dbManager.getTokenData().access_token == "access_token")
+    }
 
 }

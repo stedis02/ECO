@@ -12,7 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -28,7 +30,7 @@ import java.util.concurrent.ExecutorService
 
 
 class DocumentCameraFragment : Fragment(), View.OnClickListener {
-
+    lateinit var pdfDocumentFileName: EditText
 
 
     companion object {
@@ -47,6 +49,7 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(DocumentCameraViewModel::class.java)
+        pdfDocumentFileName = requireView().findViewById<EditText>(R.id.pdfDocumentName)
         val openCamera: Button = requireView().findViewById(R.id.openCamera)
         openCamera.setOnClickListener(this)
     }
@@ -55,11 +58,17 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
     override fun onClick(p0: View?) {
 
         if (translateIdToIndex(p0!!.id) == 1) {
+            if (pdfDocumentFileName.text.toString() =="введите имя нового документа"
+                || pdfDocumentFileName.text.toString() == ""
+            ) {
+                Toast.makeText(requireContext(), "Введите имя файла!", Toast.LENGTH_SHORT).show()
 
-            var intent = Intent(requireContext(), CameraActivity::class.java)
-            startActivity(intent)
+            } else {
+                var intent = Intent(activity, CameraActivity::class.java)
+                intent.putExtra("pdfDocumentFileName", pdfDocumentFileName.text.toString())
+                startActivity(intent)
+            }
         }
-
     }
 
     private fun translateIdToIndex(id: Int): Int {

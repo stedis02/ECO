@@ -19,6 +19,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="CircularProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/BaseAppGreen</item>
+    </style>
+
     <style name="Theme.TestovoeGit.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.TestovoeGit.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

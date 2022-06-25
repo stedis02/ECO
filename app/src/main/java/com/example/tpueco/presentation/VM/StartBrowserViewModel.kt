@@ -1,6 +1,5 @@
 package com.example.tpueco.presentation.VM
 
-import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -11,8 +10,8 @@ import com.example.tpueco.App
 
 class StartBrowserViewModel : ViewModel() {
 
-    var redirectUrl: String = "https://eco.tpu.app"
-    val resultCodeByUrl = MutableLiveData<String>()
+    val redirectUrl: String = "https://eco.tpu.app"
+    val resultAuthorizeCodeForUrl = MutableLiveData<String>()
 
 
     fun getOauthTpu(webView: WebView) {
@@ -34,19 +33,19 @@ class StartBrowserViewModel : ViewModel() {
             ): Boolean {
                 val url = request.url.toString()
                 getCodeAnswerOauthTpu(url)
-                App.fullUserTokenUrl = "https://oauth.tpu.ru/access_token?client_id=${App.CLIENT_ID}&client_secret=${App.CLIENT_SECRET}&redirect_uri=${redirectUrl}&code=${App.code}&grant_type=${App.GRANT_TYPE}"
-                resultCodeByUrl.value = App.code
+                App.fullUserTokenUrl =
+                    "https://oauth.tpu.ru/access_token?client_id=${App.CLIENT_ID}&client_secret=${App.CLIENT_SECRET}&redirect_uri=${redirectUrl}&code=${App.authorizeСode}&grant_type=${App.GRANT_TYPE}"
+                resultAuthorizeCodeForUrl.value = App.authorizeСode
                 return false
             }
         })
     }
 
     fun getCodeAnswerOauthTpu(url: String) {
-
-        var code: Boolean = url.toLowerCase().contains("code=".toLowerCase())
-        if (code) {
+        var authorizeCodeExistence: Boolean = url.toLowerCase().contains("code=".toLowerCase())
+        if (authorizeCodeExistence) {
             var str = url.split("code=") as MutableList<String>
-            App.code = str[1]
-        } else App.code = "error"
+            App.authorizeСode = str[1]
+        } else App.authorizeСode = "error"
     }
 }

@@ -1,11 +1,9 @@
 package com.example.tpueco.presentation.VM
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.tpueco.App
 import com.example.tpueco.data.Network.UsersAPI
-import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.domain.Model.UserTokenResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -14,7 +12,6 @@ import io.reactivex.schedulers.Schedulers
 class MainViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     var userTokenResponse = UserTokenResponse()
-    var userDataUrl: String = ""
     val dataReceiptCheck = MutableLiveData<Boolean>()
 
     fun getAccessToken(usersAPI: UsersAPI) {
@@ -25,34 +22,26 @@ class MainViewModel : ViewModel() {
                 .subscribe({
                     dataReceiptCheck.postValue(true)
                     userTokenResponse = it
-                    userDataUrl =
-                        "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token=${it.access_token}"
+                    Log.e(TAGResponse, "TokenResponse : <user tokens successfully received>")
                     // мега фича на старт. не забыть потом пересмотреть
-                    getUserData(usersAPI, userDataUrl)
-
+                    getUserData(usersAPI, it.access_token.toString())
                 }, {
-                    Log.e("tokenResponse", "ErrorResponse")
+                    Log.e(TAGResponse, "ErrorTokenResponse : <failed to get user token for some reason>: ${it.message}")
                 })
         )
 
     }
 
-    fun getUserData(usersAPI: UsersAPI, userDataUrl: String) {
+    fun getUserData(usersAPI: UsersAPI, access_token: String) {
 
         compositeDisposable.add(
-            usersAPI.getUserData(userDataUrl)
+            usersAPI.getUserData( userDataBaseUrl + access_token)
                 .subscribeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.v("aaaa", it.code)
-                   // Log.v("aaaa", it.lichnost.familiya)
-                   // Log.v("aaaa", it.lichnost.imya)
-                   // Log.v("aaaa", it.user_id)
-                   // Log.v("aaaa", userDataUrl)
-
-
+                    Log.v(TAGResponse, "response received, UserDataResponse came with code: ${it.code}")
                 }, {
-                    Log.e("aaaa", "q")
+                    Log.e(TAGResponse, "ErrorUserDataResponse : <failed to get user token for some reason>: ${it.message}")
 
                 })
         )
@@ -63,5 +52,9 @@ class MainViewModel : ViewModel() {
         dataReceiptCheck.value = false
     }
 
-
+companion object{
+    private var userDataBaseUrl =
+    "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token="
+    private const val TAGResponse = "Response"
+}
 }

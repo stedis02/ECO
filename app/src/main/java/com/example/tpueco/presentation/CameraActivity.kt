@@ -2,60 +2,49 @@ package com.example.tpueco.presentation
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
-import android.graphics.pdf.PdfDocument.PageInfo
-import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.os.SystemClock
-import android.provider.MediaStore
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.location.LocationRequestCompat
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import com.example.tpueco.MainActivity
 import com.example.tpueco.databinding.ActivityCameraBinding
 import com.example.tpueco.domain.tools.Document.DocumentManager
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
 import java.nio.ByteBuffer
-import java.util.*
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
 class CameraActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityCameraBinding
-    lateinit var context: Context
     private var imageCapture: ImageCapture? = null
     val pdfDocument = PdfDocument()
-    var pageNumber = 1
+    private var photoСounter = 1
+    var pdfDocumentPageNumber = 1
     var documentManager = DocumentManager()
-
-
+    lateinit var cameraProgressBar: ProgressBar
     private val executor = Executors.newSingleThreadExecutor()
+    val pdfDocumentReadyStatus = MutableLiveData<Int>(1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
+        cameraProgressBar = viewBinding.cameraProgressBar
         setContentView(viewBinding.root)
-
-        // Request camera permissions
+        cameraProgressBar.visibility = View.INVISIBLE
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -66,36 +55,30 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
-        imageCapture.takePicture(executor, object :
-            ImageCapture.OnImageCapturedCallback() {
-            @SuppressLint("UnsafeExperimentalUsageError")
-            override fun onCaptureSuccess(image: ImageProxy) {
-                val bitmap = imageProxyToBitmap(image)
-                image.close()
-                documentManager.addPageToDocumentPdf(
-                    applicationContext,
-                    pdfDocument,
-                    pageNumber,
-                    bitmap
-                )
-                pageNumber++
-                Log.v("сука", "page ${pageNumber}")
-            }
-            override fun onError(exception: ImageCaptureException) {
-                super.onError(exception)
-                Log.v("сука", "page хуйня какая-то")
-            }
-        })
+    // buttons
+    fun takePhoto(view: View) {
+        addingPhotoAsDocumentPage()
+
     }
 
-    private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
-        val planeProxy = image.planes[0]
-        val buffer: ByteBuffer = planeProxy.buffer
-        val bytes = ByteArray(buffer.remaining())
-        buffer.get(bytes)
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    fun saveDocument(view: View) {
+        getAllButtonLock(false)
+        pdfDocumentReadyStatus.observe(this, Observer {
+            if (it != photoСounter) {
+                cameraProgressBar.visibility = View.VISIBLE
+
+            } else {
+                cameraProgressBar.visibility = View.INVISIBLE
+                documentManager.saveDocumentPdf(
+                    applicationContext,
+                    pdfDocument,
+                    getEnteredPDFDocumentName()
+                )
+                Toast.makeText(applicationContext, "Файл сохранён!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+        })
+
     }
 
     private fun startCamera() {
@@ -114,9 +97,46 @@ class CameraActivity : AppCompatActivity() {
                     this@CameraActivity, cameraSelector, preview, imageCapture
                 )
             } catch (exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
+                Log.e(TAGCamera, "Use case binding failed", exc)
             }
         }, ContextCompat.getMainExecutor(this))
+    }
+
+    private fun addingPhotoAsDocumentPage() {
+        val imageCapture = imageCapture ?: return
+        photoСounter++
+        imageCapture.takePicture(executor, object :
+            ImageCapture.OnImageCapturedCallback() {
+            @SuppressLint("UnsafeExperimentalUsageError")
+            override fun onCaptureSuccess(image: ImageProxy) {
+                val bitmap = imageProxyToBitmap(image)
+                image.close()
+                documentManager.addPageToDocumentPdf(
+                    applicationContext,
+                    pdfDocument,
+                    pdfDocumentPageNumber,
+                    bitmap
+                )
+                pdfDocumentPageNumber++
+                Log.v(TAGCameraDocument, "Photo added to document on page ${pdfDocumentPageNumber}")
+                pdfDocumentReadyStatus.postValue(pdfDocumentPageNumber)
+            }
+
+            override fun onError(exception: ImageCaptureException) {
+                super.onError(exception)
+                Log.v(TAGCameraDocument, "For some reason the photo was not added to the document")
+            }
+
+        })
+
+    }
+
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+        val planeProxy = image.planes[0]
+        val buffer: ByteBuffer = planeProxy.buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
@@ -125,12 +145,14 @@ class CameraActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun makePhoto(view: View) {
-        takePhoto()
+    private fun getAllButtonLock(lockStatus: Boolean) {
+        viewBinding.imageCaptureButton.isEnabled = lockStatus
+        viewBinding.documentSaveButton.isEnabled = lockStatus
     }
 
-    fun saveDocument(view: View) {
-        documentManager.saveDocumentPdf(applicationContext, pdfDocument, "Pen.pdf")
+    fun getEnteredPDFDocumentName(): String {
+        var pdfDocumentFileName: String = intent.getStringExtra("pdfDocumentFileName").toString()
+        return "${pdfDocumentFileName}.pdf"
     }
 
     override fun onDestroy() {
@@ -140,8 +162,8 @@ class CameraActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "Camera"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private const val TAGCamera = "Camera"
+        private const val TAGCameraDocument = "CameraDocument"
         private const val REQUEST_CODE_PERMISSIONS = 11
         private val REQUIRED_PERMISSIONS =
             mutableListOf(
@@ -151,5 +173,7 @@ class CameraActivity : AppCompatActivity() {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
             }.toTypedArray()
+
+
     }
 }
