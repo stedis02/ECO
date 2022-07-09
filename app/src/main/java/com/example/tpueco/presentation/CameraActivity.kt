@@ -2,13 +2,15 @@ package com.example.tpueco.presentation
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
@@ -18,17 +20,20 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.tpueco.MainActivity
+import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.databinding.ActivityCameraBinding
 import com.example.tpueco.domain.tools.Document.DocumentManager
+import java.io.File
 import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 
 
 class CameraActivity : AppCompatActivity() {
-
+    lateinit var dbManager: DBManager
     private lateinit var viewBinding: ActivityCameraBinding
     private var imageCapture: ImageCapture? = null
     val pdfDocument = PdfDocument()
@@ -41,6 +46,7 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dbManager = DBManager(this)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
         cameraProgressBar = viewBinding.cameraProgressBar
         setContentView(viewBinding.root)
@@ -55,31 +61,12 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    // buttons
-    fun takePhoto(view: View) {
-        addingPhotoAsDocumentPage()
-
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun saveDocument(view: View) {
-        getAllButtonLock(false)
-        pdfDocumentReadyStatus.observe(this, Observer {
-            if (it != photoСounter) {
-                cameraProgressBar.visibility = View.VISIBLE
-
-            } else {
-                cameraProgressBar.visibility = View.INVISIBLE
-                documentManager.saveDocumentPdf(
-                    applicationContext,
-                    pdfDocument,
-                    getEnteredPDFDocumentName()
-                )
-                Toast.makeText(applicationContext, "Файл сохранён!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
-            }
-        })
-
-    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this@CameraActivity)
@@ -100,6 +87,14 @@ class CameraActivity : AppCompatActivity() {
                 Log.e(TAGCamera, "Use case binding failed", exc)
             }
         }, ContextCompat.getMainExecutor(this))
+    }
+
+    fun cancel(view: View) {
+        startActivity(Intent(this, MainActivity::class.java))
+    }
+
+    fun takePhoto(view: View) {
+        addingPhotoAsDocumentPage()
     }
 
     private fun addingPhotoAsDocumentPage() {
@@ -126,9 +121,7 @@ class CameraActivity : AppCompatActivity() {
                 super.onError(exception)
                 Log.v(TAGCameraDocument, "For some reason the photo was not added to the document")
             }
-
         })
-
     }
 
     private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
@@ -139,15 +132,37 @@ class CameraActivity : AppCompatActivity() {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-            baseContext, it
-        ) == PackageManager.PERMISSION_GRANTED
+    fun saveDocument(view: View) {
+        getAllButtonLock(false)
+        pdfDocumentReadyStatus.observe(this, Observer {
+            if (it != photoСounter) {
+                cameraProgressBar.visibility = View.VISIBLE
+
+            } else {
+                cameraProgressBar.visibility = View.INVISIBLE
+                savePdfDocumentNameInDataBase(getEnteredPDFDocumentName())
+                documentManager.saveDocumentPdf(
+                    applicationContext,
+                    pdfDocument,
+                    getEnteredPDFDocumentName()
+                )
+                Toast.makeText(applicationContext, "Файл сохранён!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+        })
+
+    }
+
+    fun savePdfDocumentNameInDataBase(pdfDocumentName: String){
+        dbManager.dbOpen()
+        dbManager.dbInsertPdfDocument(pdfDocumentName)
+        dbManager.dbClose()
     }
 
     private fun getAllButtonLock(lockStatus: Boolean) {
         viewBinding.imageCaptureButton.isEnabled = lockStatus
         viewBinding.documentSaveButton.isEnabled = lockStatus
+        viewBinding.documentCancelButton.isEnabled = lockStatus
     }
 
     fun getEnteredPDFDocumentName(): String {

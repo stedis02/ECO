@@ -26,11 +26,12 @@
       app:layout_constraintVertical_bias="0.943" />
 
   <EditText
-      android:id="@+id/pdfDocumentName"
+      android:id="@+id/pdfDocumentNameId"
       android:layout_width="300dp"
       android:layout_height="wrap_content"
       android:ems="10"
       android:inputType="textPersonName"
+      android:minHeight="48dp"
       android:text="введите имя нового документа"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
@@ -38,6 +39,15 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="@+id/CameraPreview"
       app:layout_constraintVertical_bias="0.21" />
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/DocumentRecycler"
+      android:layout_width="0dp"
+      android:layout_height="300dp"
+      app:layout_constraintBottom_toTopOf="@+id/openCamera"
+      app:layout_constraintEnd_toEndOf="@+id/CameraPreview"
+      app:layout_constraintStart_toStartOf="@+id/CameraPreview"
+      app:layout_constraintTop_toBottomOf="@+id/pdfDocumentNameId" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
