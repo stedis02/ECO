@@ -2,8 +2,10 @@ package com.example.tpueco
 
 import android.app.Application
 import android.content.Context
+import com.example.tpueco.DI.AppComponent
+import com.example.tpueco.DI.DaggerAppComponent
+import com.example.tpueco.DI.DocumentDepsStore
 import com.example.tpueco.data.Network.UsersAPI
-import com.example.tpueco.data.tools.RetrofitManager
 
 class App : Application() {
     lateinit var usersAPI: UsersAPI
@@ -19,10 +21,21 @@ class App : Application() {
         var fullUserTokenUrl: String = ""
     }
 
+    val appComponent: AppComponent by lazy{
+        DaggerAppComponent.builder()
+            .context(context = this)
+            .build()
+    }
     override fun onCreate() {
         super.onCreate()
-        usersAPI = RetrofitManager.GitRetrofit().create(UsersAPI::class.java)
+        DocumentDepsStore.deps = appComponent
 
 
     }
 }
+
+val Context.appComponent : AppComponent
+    get() = when(this){
+        is App -> appComponent
+        else -> this.applicationContext.appComponent
+    }

@@ -8,11 +8,13 @@ import com.example.tpueco.domain.Model.UserTokenResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     var userTokenResponse = UserTokenResponse()
     val dataReceiptCheck = MutableLiveData<Boolean>()
+
 
     fun getAccessToken(usersAPI: UsersAPI) {
         compositeDisposable.add(
@@ -24,7 +26,7 @@ class MainViewModel : ViewModel() {
                     userTokenResponse = it
                     Log.e(TAGResponse, "TokenResponse : <user tokens successfully received>")
                     // мега фича на старт. не забыть потом пересмотреть
-                    getUserData(usersAPI, it.access_token.toString())
+                    getUserDataByTokenUrl(usersAPI, it.access_token.toString())
                 }, {
                     Log.e(TAGResponse, "ErrorTokenResponse : <failed to get user token for some reason>: ${it.message}")
                 })
@@ -32,7 +34,7 @@ class MainViewModel : ViewModel() {
 
     }
 
-    fun getUserData(usersAPI: UsersAPI, access_token: String) {
+    fun getUserDataByTokenUrl(usersAPI: UsersAPI, access_token: String) {
 
         compositeDisposable.add(
             usersAPI.getUserData( userDataBaseUrl + access_token)

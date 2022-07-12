@@ -17,13 +17,15 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
+import com.example.tpueco.DI.DaggerDocumentFeatureComponent
+import com.example.tpueco.DI.DocumentDepsProvider
 import com.example.tpueco.domain.tools.camera.YUVtoRGB
 import com.google.common.util.concurrent.ListenableFuture
 import java.io.File
 
 
-class DocumentCameraViewModel : ViewModel() {
+ internal class DocumentCameraViewModel : ViewModel() {
 
-
+val documentFeatureComponent = DaggerDocumentFeatureComponent.builder().deps(DocumentDepsProvider.deps).build()
 
 }

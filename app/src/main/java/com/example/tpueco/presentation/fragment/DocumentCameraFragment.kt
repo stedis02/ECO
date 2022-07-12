@@ -1,5 +1,6 @@
 package com.example.tpueco.presentation.fragment
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +35,11 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
         fun newInstance() = DocumentCameraFragment()
     }
 
-    private lateinit var viewModel: DocumentCameraViewModel
+    override fun onAttach(context: Context) {
+        ViewModelProvider(this).get<DocumentCameraViewModel>()
+            .documentFeatureComponent.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +53,6 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
         dbManager = DBManager(requireContext())
         dbManager.dbOpen()
         documentManager = DocumentManager()
-        viewModel = ViewModelProvider(this).get(DocumentCameraViewModel::class.java)
         pdfDocumentFileName = requireView().findViewById<EditText>(R.id.pdfDocumentNameId)
         pdfDocumentsGroupAdapter = PdfDocumentsGroupAdapter(requireContext())
         pdfDocumentRecyclerView = requireView().findViewById(R.id.DocumentRecycler)

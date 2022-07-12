@@ -1,35 +1,24 @@
 package com.example.tpueco
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.tpueco.data.Network.UsersAPI
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.presentation.VM.MainViewModel
 ///import com.example.tpueco.presentation.Adapter1
 import com.example.tpueco.presentation.StartBrowserAtivity
 import com.example.tpueco.presentation.fragment.DocumentCameraFragment
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers.Unconfined
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import net.axay.simplekotlinmail.delivery.MailerManager
-import net.axay.simplekotlinmail.delivery.mailerBuilder
-import net.axay.simplekotlinmail.delivery.send
-import net.axay.simplekotlinmail.delivery.sendSync
-import javax.xml.bind.JAXBElement
-import net.axay.simplekotlinmail.email.emailBuilder as emailBuilder
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
     lateinit var dbManager: DBManager
+    @Inject
+    lateinit var usersAPI: UsersAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,12 +45,13 @@ class MainActivity : AppCompatActivity() {
         dbManager.dbOpen()
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         mainViewModel.init()
+        appComponent.inject(this)
     }
 
     fun getDataFromUsersAPI(){
         if(tokenAvailabilityCheck()){
-            mainViewModel.getUserData(
-                (application as App).usersAPI,
+            mainViewModel.getUserDataByTokenUrl(
+                usersAPI,
                 "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token=${dbManager.getTokenData().access_token.toString()}"
             )
         }else{
@@ -78,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             intent = Intent(this, StartBrowserAtivity::class.java)
             startActivity(intent)
         } else {
-            mainViewModel.getAccessToken((application as App).usersAPI)
+            mainViewModel.getAccessToken(usersAPI)
         }
     }
 

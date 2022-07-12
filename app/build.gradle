@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 
@@ -55,8 +56,13 @@ android {
     }
 }
 
-dependencies {
+var daggerVersion = "2.42"
+var dagger = "com.google.dagger:dagger:$daggerVersion"
+var daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
 
+dependencies {
+    implementation(dagger)
+    kapt(daggerCompiler)
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
