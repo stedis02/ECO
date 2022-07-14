@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tpueco.R
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.domain.adapter.PdfDocumentsGroupAdapter
+import com.example.tpueco.domain.mail.Mailer
 import com.example.tpueco.domain.tools.Document.DocumentManager
 import com.example.tpueco.presentation.CameraActivity
 import com.example.tpueco.presentation.VM.DocumentCameraViewModel
@@ -62,6 +63,8 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
         getItemTouchHelper().attachToRecyclerView(pdfDocumentRecyclerView)
         val openCamera: Button = requireView().findViewById(R.id.openCamera)
         openCamera.setOnClickListener(this)
+
+
     }
 
 

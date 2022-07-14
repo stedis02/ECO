@@ -24,6 +24,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.tpueco.MainActivity
+import com.example.tpueco.appComponent
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.databinding.ActivityCameraBinding
 import com.example.tpueco.domain.tools.Document.DocumentManager
@@ -45,6 +46,7 @@ class CameraActivity : AppCompatActivity() {
     val pdfDocumentReadyStatus = MutableLiveData<Int>(1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        appComponent.inject(this)
         super.onCreate(savedInstanceState)
         dbManager = DBManager(this)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
