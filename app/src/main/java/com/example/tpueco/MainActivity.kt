@@ -3,11 +3,13 @@ package com.example.tpueco
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.tpueco.data.Network.UsersAPI
 import com.example.tpueco.data.db.DBManager
+import com.example.tpueco.domain.mail.Mailer
 import com.example.tpueco.presentation.VM.MainViewModel
 ///import com.example.tpueco.presentation.Adapter1
 import com.example.tpueco.presentation.StartBrowserAtivity
@@ -89,10 +91,23 @@ class MainActivity : AppCompatActivity() {
     }
         fun Click2(view: View) {
 
-   /**     supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerMain, DocumentCameraFragment.newInstance())
-            .commitNow()
-    **/
+            //Mail receive test
+            Thread(Runnable { run {
+                var i: Int = 0
+                try {
+                    for(e in   Mailer.receive("letter.tpu.ru", 993,"sst13@tpu.ru", "McmAkmD7").reversed()){
+                        if(i < 100){i++}
+                        Log.v("ddd", e.subject.toString())
+
+                    }
+
+                }catch (e: Exception){
+                    e.printStackTrace()
+                    Log.v("ddd", e.stackTraceToString() )
+                }
+            } }).start()
+
+
 
       }
 

@@ -6,6 +6,7 @@ import com.example.tpueco.DI.AppComponent
 import com.example.tpueco.DI.DaggerAppComponent
 import com.example.tpueco.DI.DocumentDepsStore
 import com.example.tpueco.data.Network.UsersAPI
+import com.example.tpueco.presentation.fragment.DocumentCameraFragment
 
 class App : Application() {
     lateinit var usersAPI: UsersAPI
