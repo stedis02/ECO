@@ -26,7 +26,7 @@
       app:layout_constraintVertical_bias="0.943" />
 
   <EditText
-      android:id="@+id/pdfDocumentNameId"
+      android:id="@+id/mailMainHeader"
       android:layout_width="350dp"
       android:layout_height="wrap_content"
       android:ems="10"
@@ -41,13 +41,13 @@
       app:layout_constraintVertical_bias="0.21" />
 
   <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/DocumentRecycler"
+      android:id="@+id/mailMainRecycler"
       android:layout_width="350dp"
       android:layout_height="300dp"
       app:layout_constraintBottom_toTopOf="@+id/openCamera"
       app:layout_constraintEnd_toEndOf="@+id/CameraPreview"
       app:layout_constraintStart_toStartOf="@+id/CameraPreview"
-      app:layout_constraintTop_toBottomOf="@+id/pdfDocumentNameId" />
+      app:layout_constraintTop_toBottomOf="@+id/mailMainHeader" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

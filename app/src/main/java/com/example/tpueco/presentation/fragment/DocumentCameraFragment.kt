@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tpueco.R
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.domain.adapter.PdfDocumentsGroupAdapter
-import com.example.tpueco.domain.mail.Mailer
 import com.example.tpueco.domain.tools.Document.DocumentManager
 import com.example.tpueco.presentation.CameraActivity
 import com.example.tpueco.presentation.VM.DocumentCameraViewModel
@@ -54,9 +53,9 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
         dbManager = DBManager(requireContext())
         dbManager.dbOpen()
         documentManager = DocumentManager()
-        pdfDocumentFileName = requireView().findViewById<EditText>(R.id.pdfDocumentNameId)
+        pdfDocumentFileName = requireView().findViewById<EditText>(R.id.mailMainHeader)
         pdfDocumentsGroupAdapter = PdfDocumentsGroupAdapter(requireContext())
-        pdfDocumentRecyclerView = requireView().findViewById(R.id.DocumentRecycler)
+        pdfDocumentRecyclerView = requireView().findViewById(R.id.mailMainRecycler)
         pdfDocumentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         pdfDocumentRecyclerView.adapter = pdfDocumentsGroupAdapter
         pdfDocumentsGroupAdapter.updateAdapter(dbManager.getPdfDocument())

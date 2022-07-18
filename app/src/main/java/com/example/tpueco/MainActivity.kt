@@ -3,22 +3,31 @@ package com.example.tpueco
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.tpueco.data.Network.UsersAPI
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.domain.mail.Mailer
+import com.example.tpueco.domain.mail.MessageParser
 import com.example.tpueco.presentation.VM.MainViewModel
 ///import com.example.tpueco.presentation.Adapter1
 import com.example.tpueco.presentation.StartBrowserAtivity
 import com.example.tpueco.presentation.fragment.DocumentCameraFragment
+import com.example.tpueco.presentation.fragment.MailMainFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
     lateinit var dbManager: DBManager
+
     @Inject
     lateinit var usersAPI: UsersAPI
 
@@ -38,7 +47,11 @@ class MainActivity : AppCompatActivity() {
 
             } else {
             }
+
+
         })
+
+        runMailService()
 
     }
 
@@ -82,6 +95,64 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    fun runMailService(){
+        var messageGroups: MutableList<MutableList<com.example.tpueco.domain.Model.Message>> =
+            mutableListOf()
+
+        //Mail receive test
+        Thread(Runnable {
+
+            run {
+                try {
+
+                    for (message in Mailer.receive("letter.tpu.ru", 993, "sst13@tpu.ru", "McmAkmD7")
+                        .reversed()) {
+                        var text = "errorText"
+                        val newMessage = MessageParser.parseMessage(message)
+                        var findGroup = false
+                        for (group in messageGroups) {
+                            if (group.size != 0) {
+                                if (group[0].from == newMessage.from) {
+                                    group.add(newMessage)
+
+
+                                    findGroup = true
+                                    break
+                                }
+                            } else {
+                                val newGroup: MutableList<com.example.tpueco.domain.Model.Message> =
+                                    mutableListOf()
+                                newGroup.add(newMessage)
+                                messageGroups.add(newGroup)
+                                findGroup = true
+                                break
+                            }
+
+                        }
+                        if (!findGroup){
+                            val newGroup: MutableList<com.example.tpueco.domain.Model.Message> =
+                                mutableListOf()
+                            newGroup.add(newMessage)
+                            messageGroups.add(newGroup)
+                        }
+
+                        Log.v("vvv", messageGroups.size.toString())
+
+
+
+                        MailMainFragment.groupLive.postValue(messageGroups)
+                    }
+
+                } catch (e: Exception) {
+                    Log.v("ddd", e.stackTraceToString())
+                }
+            }
+        }).start()
+
+
+    }
+
     fun Click1(view: View) {
 
         supportFragmentManager.beginTransaction()
@@ -91,22 +162,9 @@ class MainActivity : AppCompatActivity() {
     }
         fun Click2(view: View) {
 
-            //Mail receive test
-            Thread(Runnable { run {
-                var i: Int = 0
-                try {
-                    for(e in   Mailer.receive("letter.tpu.ru", 993,"sst13@tpu.ru", "McmAkmD7").reversed()){
-                        if(i < 100){i++}
-                        Log.v("ddd", e.subject.toString())
-
-                    }
-
-                }catch (e: Exception){
-                    e.printStackTrace()
-                    Log.v("ddd", e.stackTraceToString() )
-                }
-            } }).start()
-
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerMain, MailMainFragment.newInstance())
+                .commitNow()
 
 
       }
