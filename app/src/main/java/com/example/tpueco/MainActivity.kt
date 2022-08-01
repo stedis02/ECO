@@ -27,7 +27,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
     lateinit var dbManager: DBManager
-
+    var messageGroups: MutableList<MutableList<com.example.tpueco.domain.Model.Message>> =
+        mutableListOf()
     @Inject
     lateinit var usersAPI: UsersAPI
 
@@ -97,17 +98,18 @@ class MainActivity : AppCompatActivity() {
 
 
     fun runMailService(){
-        var messageGroups: MutableList<MutableList<com.example.tpueco.domain.Model.Message>> =
-            mutableListOf()
+
 
         //Mail receive test
         Thread(Runnable {
 
             run {
+                var i : Int = 0
                 try {
 
                     for (message in Mailer.receive("letter.tpu.ru", 993, "sst13@tpu.ru", "McmAkmD7")
                         .reversed()) {
+                        if(i > 100){break}
                         var text = "errorText"
                         val newMessage = MessageParser.parseMessage(message)
                         var findGroup = false
@@ -136,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                             newGroup.add(newMessage)
                             messageGroups.add(newGroup)
                         }
-
+                        i++
                         Log.v("vvv", messageGroups.size.toString())
 
 
