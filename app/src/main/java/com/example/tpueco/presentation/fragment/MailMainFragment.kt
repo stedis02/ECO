@@ -35,7 +35,7 @@ class MailMainFragment : Fragment(), View.OnClickListener {
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var cameraProgressBar: ProgressBar
-        val groupLive = MutableLiveData<MutableList<MutableList<Message>>>(null)
+        val groupLive = MutableLiveData<MutableList<MutableList<Message>>>()
         fun newInstance() = MailMainFragment()
     }
 
@@ -90,7 +90,6 @@ class MailMainFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(p0: View?) {
-        TODO("Not yet implemented")
     }
 
 

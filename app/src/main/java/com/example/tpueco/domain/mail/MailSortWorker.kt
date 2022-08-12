@@ -5,19 +5,26 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.work.ListenableWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.tpueco.MainActivity
 import com.example.tpueco.domain.Model.Message
 import com.example.tpueco.domain.Model.MessageDate
 import com.example.tpueco.presentation.fragment.MailMainFragment
+import java.io.IOException
 
 class MailSortWorker(context: Context, workerParams: WorkerParameters) : Worker(
     context,
     workerParams
 ) {
     override fun doWork(): Result {
-        sortMail()
+        try {
+            Log.v("aaa", "aaa")
+            sortMail()
+        } catch (e: IOException) {
+            return ListenableWorker.Result.retry()
+        }
         return Result.success()
     }
 
