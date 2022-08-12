@@ -28,7 +28,10 @@ class MainViewModel : ViewModel() {
                     // мега фича на старт. не забыть потом пересмотреть
                     getUserDataByTokenUrl(usersAPI, it.access_token.toString())
                 }, {
-                    Log.e(TAGResponse, "ErrorTokenResponse : <failed to get user token for some reason>: ${it.message}")
+                    Log.e(
+                        TAGResponse,
+                        "ErrorTokenResponse : <failed to get user token for some reason>: ${it.message}"
+                    )
                 })
         )
 
@@ -37,13 +40,19 @@ class MainViewModel : ViewModel() {
     fun getUserDataByTokenUrl(usersAPI: UsersAPI, access_token: String) {
 
         compositeDisposable.add(
-            usersAPI.getUserData( userDataBaseUrl + access_token)
+            usersAPI.getUserData(userDataBaseUrl + access_token)
                 .subscribeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.v(TAGResponse, "response received, UserDataResponse came with code: ${it.code}")
+                    Log.v(
+                        TAGResponse,
+                        "response received, UserDataResponse came with code: ${it.code}"
+                    )
                 }, {
-                    Log.e(TAGResponse, "ErrorUserDataResponse : <failed to get user token for some reason>: ${it.message}")
+                    Log.e(
+                        TAGResponse,
+                        "ErrorUserDataResponse : <failed to get user token for some reason>: ${it.message}"
+                    )
 
                 })
         )
@@ -54,9 +63,9 @@ class MainViewModel : ViewModel() {
         dataReceiptCheck.value = false
     }
 
-companion object{
-    private var userDataBaseUrl =
-    "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token="
-    private const val TAGResponse = "Response"
-}
+    companion object {
+        private var userDataBaseUrl =
+            "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token="
+        private const val TAGResponse = "Response"
+    }
 }

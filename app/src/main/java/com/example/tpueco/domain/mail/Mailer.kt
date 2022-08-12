@@ -70,31 +70,6 @@ object Mailer
     }
 
 
-    fun appendMessageToFolder(
-        host: String,
-        port: Int,
-        user: String,
-        pass: String,
-        message: Message,
-        folderName: String,
-        createIfNotExists: Boolean = false,
-        createWithType: Int = Folder.HOLDS_FOLDERS
-    ) {
-        val session = getSession(user, pass, "imaps")
-
-        val store = session.getStore("imaps")
-        store.connect(host, port, user, pass)
-
-        val folder = store.getFolder(folderName)
-        if (!folder.exists() && createIfNotExists)
-            folder.create(createWithType)
-
-        folder.open(Folder.READ_WRITE)
-        folder.appendMessages(arrayOf(message))
-
-        store.close()
-    }
-
 
     private fun getSession(user: String, pass: String, protocol: String): Session {
         val props = Properties()

@@ -1,10 +1,13 @@
 package com.example.tpueco.presentation.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -14,8 +17,13 @@ import androidx.lifecycle.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tpueco.MainActivity
 import com.example.tpueco.R
+import com.example.tpueco.data.db.DBManager
+import com.example.tpueco.domain.Model.Message
 import com.example.tpueco.domain.adapter.MailGroupsAdapter
+import com.example.tpueco.domain.mail.Mailer
+import com.example.tpueco.domain.mail.MessageParser
 import com.example.tpueco.presentation.VM.MailMainViewModel
 
 class MailMainFragment : Fragment(), View.OnClickListener {
@@ -23,11 +31,11 @@ class MailMainFragment : Fragment(), View.OnClickListener {
     lateinit var mailGroupsAdapter: MailGroupsAdapter
     lateinit var mailMainRecyclerView: RecyclerView
 
-    var s: Int = 0
 
     companion object {
-        val groupLive = MutableLiveData<MutableList<MutableList<com.example.tpueco.domain.Model.Message>>>()
-
+        @SuppressLint("StaticFieldLeak")
+        lateinit var cameraProgressBar: ProgressBar
+        val groupLive = MutableLiveData<MutableList<MutableList<Message>>>(null)
         fun newInstance() = MailMainFragment()
     }
 
@@ -46,15 +54,16 @@ class MailMainFragment : Fragment(), View.OnClickListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        cameraProgressBar = requireView().findViewById(R.id.MailProgressBar)
+        cameraProgressBar.visibility = View.INVISIBLE
         mailGroupsAdapter = MailGroupsAdapter(requireContext())
         mailMainRecyclerView = requireView().findViewById(R.id.mailMainRecycler)
         mailMainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mailMainRecyclerView.adapter = mailGroupsAdapter
         getItemTouchHelper().attachToRecyclerView(mailMainRecyclerView)
-
         activity?.let {
             groupLive.observe(it, Observer {
-                    mailGroupsAdapter.updateAdapter(it)
+                mailGroupsAdapter.updateAdapter(it)
 
             })
         }
@@ -63,18 +72,7 @@ class MailMainFragment : Fragment(), View.OnClickListener {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-
-
-    }
-
-    override fun onClick(p0: View?) {
-
-    }
-
-
-    fun getItemTouchHelper(): ItemTouchHelper {
+    private fun getItemTouchHelper(): ItemTouchHelper {
         return ItemTouchHelper(object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
@@ -89,6 +87,10 @@ class MailMainFragment : Fragment(), View.OnClickListener {
 
             }
         })
+    }
+
+    override fun onClick(p0: View?) {
+        TODO("Not yet implemented")
     }
 
 

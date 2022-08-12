@@ -9,11 +9,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, ConstantsDB.DBName,
     override fun onCreate(sqLiteDatabase: SQLiteDatabase?) {
         sqLiteDatabase?.execSQL(ConstantsDB.TokenDataTableStructure)
         sqLiteDatabase?.execSQL(ConstantsDB.pdfDocumentTableStructure)
+        sqLiteDatabase?.execSQL(ConstantsDB.massageGroupsTableStructure)
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase?, p1: Int, p2: Int) {
         sqLiteDatabase?.execSQL(ConstantsDB.TokenDataTableStructure)
         sqLiteDatabase?.execSQL(ConstantsDB.pdfDocumentTableStructure)
+        sqLiteDatabase?.execSQL(ConstantsDB.massageGroupsTableStructure)
         onCreate(sqLiteDatabase)
     }
 

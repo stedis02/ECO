@@ -41,20 +41,21 @@ class PdfDocumentsGroupAdapter(var context: Context) :
         notifyDataSetChanged()
     }
 
-    fun removeItemFromDataBase(position: Int, dbManager: DBManager){
+    fun removeItemFromDataBase(position: Int, dbManager: DBManager) {
         dbManager.deletePdfDocument(pdfDocumentsGroup.get(position).documentId.toString())
     }
 
-    class MainViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    class MainViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
 
         var pdfDocumentNameView: TextView = itemView.findViewById(R.id.mailMainHeader)
-        val sendPDFDocument: Button = itemView.findViewById(R.id.sendDocumentButtom)
+        private val sendPDFDocument: Button = itemView.findViewById(R.id.sendDocumentButtom)
         var context: Context
         lateinit var pdfDocumentName: String
 
         init {
             sendPDFDocument.setOnClickListener(this)
-           this.context = context
+            this.context = context
         }
 
         fun setData(pdfDocumentName: String) {
@@ -63,12 +64,8 @@ class PdfDocumentsGroupAdapter(var context: Context) :
         }
 
 
-
-
-
-
         override fun onClick(p0: View?) {
-           sharePDFDocument(context, pdfDocumentName)
+            sharePDFDocument(context, pdfDocumentName)
         }
 
         private fun sharePDFDocument(context: Context, pdfDocumentName: String) {
@@ -77,8 +74,11 @@ class PdfDocumentsGroupAdapter(var context: Context) :
             )
 
             var pdfUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName().toString() + ".provider",
-                    file)
+                FileProvider.getUriForFile(
+                    context,
+                    context.applicationContext.packageName.toString() + ".provider",
+                    file
+                )
             } else {
                 Uri.fromFile(file)
             }

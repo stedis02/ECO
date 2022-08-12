@@ -5,16 +5,18 @@
       <map>
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.196" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/drawable/ic_launcher_background.xml" value="0.349" />
+        <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/drawable/message_body.xml" value="0.306" />
+        <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/drawable/standart_button.xml" value="0.307" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/activity_browser.xml" value="0.264" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/activity_camera.xml" value="0.2359375" />
-        <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/fragment_document_camera.xml" value="0.18802083333333333" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/fragment_first.xml" value="0.18802083333333333" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/fragment_mail.xml" value="0.264" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/fragment_mail_main.xml" value="0.176" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/fragment_test.xml" value="0.18802083333333333" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/icon.xml" value="0.36666666666666664" />
-        <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/mail_item.xml" value="0.2" />
+        <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/mail_item.xml" value="0.264" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/mail_main_item.xml" value="0.6" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/pdf_document_item.xml" value="0.36666666666666664" />
         <entry key="..\:/TPU ECO/testovoeGit/app/src/main/res/layout/provider_paths.xml" value="0.1984375" />

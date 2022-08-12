@@ -14,10 +14,11 @@
 
   <Button
       android:id="@+id/openCamera"
+      android:background="@drawable/standart_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:onClick="openCamera"
-      android:text="Button"
+      android:text="создать новый документ"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.498"

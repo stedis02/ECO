@@ -58,16 +58,19 @@ android {
 var daggerVersion = "2.42"
 var dagger = "com.google.dagger:dagger:$daggerVersion"
 var daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
-
+var core_version = "1.6.0"
 dependencies {
     implementation(dagger)
     kapt(daggerCompiler)
+
+    implementation "android.arch.work:work-runtime:1.0.1"
+    implementation "androidx.core:core-ktx:$core_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     implementation 'com.sun.mail:android-mail:1.6.6'
     implementation 'com.sun.mail:android-activation:1.6.6'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.0-alpha01"
     implementation "android.arch.lifecycle:extensions:1.1.1"

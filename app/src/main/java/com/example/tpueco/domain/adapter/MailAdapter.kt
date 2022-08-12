@@ -11,7 +11,7 @@ import com.example.tpueco.MainActivity
 import com.example.tpueco.R
 import com.example.tpueco.presentation.fragment.MailFragment
 
-class MailAdapter (val context: Context) :
+class MailAdapter(val context: Context) :
     RecyclerView.Adapter<MailAdapter.MainViewHolder>() {
     var messages: MutableList<com.example.tpueco.domain.Model.Message> =
         arrayListOf()
@@ -25,7 +25,8 @@ class MailAdapter (val context: Context) :
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         var date = messages.get(position).date.day + " " + messages.get(position)
             .date.month + " " + messages.get(position).date.time
-        holder.setData(messages.get(position).header, messages.get(position).Text.toString(), date
+        holder.setData(
+            messages.get(position).header, messages.get(position).Text.toString(), date
         )
     }
 
@@ -39,7 +40,7 @@ class MailAdapter (val context: Context) :
         return messages.size
     }
 
-    class MainViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView){
+    class MainViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView) {
         var messageMessageHeader: TextView = itemView.findViewById(R.id.mailMainHeader)
         var messageGroupLastText: TextView = itemView.findViewById(R.id.mailMainText)
         var messageGroupLastDate: TextView = itemView.findViewById(R.id.mailMainDate)
@@ -49,6 +50,7 @@ class MailAdapter (val context: Context) :
         init {
 
         }
+
         fun setData(
             _messageMessageHeader: String,
             _messageGroupLastText: String,

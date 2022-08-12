@@ -39,18 +39,18 @@ class MailFragment : Fragment() {
         super.onAttach(context)
 
     }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MailViewModel::class.java)
 
         val bundle = this.arguments
         val pos = bundle!!.getInt("position", defaultValue)
-        var mainActivity: MainActivity = context as MainActivity
-mailAdapter= MailAdapter(requireContext())
+        mailAdapter = MailAdapter(requireContext())
         mailRecyclerView = requireView().findViewById(R.id.mailRecyclerView)
         mailRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mailRecyclerView.adapter = mailAdapter
-        mailAdapter.updateAdapter(mainActivity.messageGroups.get(pos))
+        mailAdapter.updateAdapter(MainActivity.messageGroups.get(pos))
     }
 
 }
