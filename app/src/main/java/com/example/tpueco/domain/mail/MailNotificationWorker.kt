@@ -41,12 +41,16 @@ class MailNotificationWorker(context: Context, workerParams: WorkerParameters) :
     }
 }
 
+
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun checkNewMessage(context: Context) {
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    val email =  sharedPreferences.getString("Email", "error")
+    val password =  sharedPreferences.getString("Password", "error")
     while (true) {
         val newMessage = MessageParser.parseMessage(
-            Mailer.receive("letter.tpu.ru", 993, "sst13@tpu.ru", "McmAkmD7")
+            Mailer.receive("letter.tpu.ru", 993, email.toString(), password.toString())
                 .reversed()[0]
         )
         if (sharedPreferences.getString("lastMessageDate", "") != newMessage.date.time) {

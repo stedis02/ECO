@@ -1,4 +1,4 @@
-package com.example.tpueco.domain.adapter
+package com.example.tpueco.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context

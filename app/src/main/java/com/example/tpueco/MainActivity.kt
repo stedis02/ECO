@@ -4,20 +4,18 @@ package com.example.tpueco
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.example.tpueco.data.Network.UsersAPI
 import com.example.tpueco.data.db.DBManager
-import com.example.tpueco.domain.mail.MailNotificationWorker
-import com.example.tpueco.domain.mail.MailSortWorker
 import com.example.tpueco.presentation.StartBrowserAtivity
 import com.example.tpueco.presentation.VM.MainViewModel
 import com.example.tpueco.presentation.fragment.DocumentCameraFragment
+import com.example.tpueco.presentation.fragment.MailLoginFragment
 import com.example.tpueco.presentation.fragment.MailMainFragment
 import javax.inject.Inject
 
@@ -26,9 +24,9 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var mainViewModel: MainViewModel
     lateinit var dbManager: DBManager
-
     @Inject
     lateinit var usersAPI: UsersAPI
+
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -38,7 +36,9 @@ class MainActivity : AppCompatActivity() {
         init()
         getDataFromUsersAPI()
         addUserTokenToDataBaseIfDataIsReceived()
-        runMailWorkers()
+        if(userMailAuthorizationCheck()) {
+            mainViewModel.runMailWorkers()
+        }
     }
 
     private fun init() {
@@ -50,12 +50,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun getDataFromUsersAPI() {
+  private  fun getDataFromUsersAPI() {
         if (tokenAvailabilityCheck()) {
             dbManager.dbOpen()
             mainViewModel.getUserDataByTokenUrl(
                 usersAPI,
-                "https://api.tpu.ru/v2/auth/user?apiKey=${App.API_KEY}&access_token=${dbManager.getTokenData().access_token.toString()}"
+                "https://api.tpu.ru/v2/auth/user?apiKey=${App.apiKey}&access_token=${dbManager.getTokenData().access_token.toString()}"
             )
 
             dbManager.dbClose()
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun tokenAvailabilityCheck(): Boolean {
+  private  fun tokenAvailabilityCheck(): Boolean {
         dbManager.dbOpen()
         val status =
             !(dbManager.getTokenData().access_token == null || dbManager.getTokenData().access_token == "null" || dbManager.getTokenData().access_token == "access_token")
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         return status
     }
 
-    fun getTokenIfBDNull() {
+ private   fun getTokenIfBDNull() {
         if (App.fullUserTokenUrl == "") {
             intent = Intent(this, StartBrowserAtivity::class.java)
             startActivity(intent)
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun addUserTokenToDataBaseIfDataIsReceived() {
+  private  fun addUserTokenToDataBaseIfDataIsReceived() {
 
         mainViewModel.dataReceiptCheck.observe(this, Observer {
             if (it == true) {
@@ -97,21 +97,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun runMailWorkers() {
-        runMailNotificationWorker()
-        runMailSortWorker()
-    }
-
-    fun runMailNotificationWorker() {
-        val MailNotificationWorkRequest: OneTimeWorkRequest =
-            OneTimeWorkRequest.Builder(MailNotificationWorker::class.java).build()
-        WorkManager.getInstance().enqueue(MailNotificationWorkRequest)
-    }
-
-    fun runMailSortWorker() {
-        val MailSortWorkRequest: OneTimeWorkRequest =
-            OneTimeWorkRequest.Builder(MailSortWorker::class.java).build()
-        WorkManager.getInstance().enqueue(MailSortWorkRequest)
+    private fun userMailAuthorizationCheck(): Boolean{
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val email = sharedPreferences.getString("Email", "error")
+        return email.toString() != "error"
     }
 
     fun Click1(view: View) {
@@ -123,22 +112,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun Click2(view: View) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val email = sharedPreferences.getString("Email", "error")
+        openMailFragments(email.toString())
+    }
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerMain, MailMainFragment.newInstance())
-            .commitNow()
-
-
+    private fun openMailFragments(email : String){
+        if(email == "error"){
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerMain, MailLoginFragment.newInstance())
+                .commitNow()
+        } else{
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerMain, MailMainFragment.newInstance())
+                .commitNow()
+        }
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
-    }
-
-    companion object {
-        var messageGroups: MutableList<MutableList<com.example.tpueco.domain.Model.Message>> =
-            mutableListOf()
     }
 
 

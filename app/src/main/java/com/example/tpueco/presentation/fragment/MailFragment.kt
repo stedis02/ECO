@@ -6,15 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tpueco.MainActivity
 import com.example.tpueco.R
-import com.example.tpueco.domain.adapter.MailAdapter
-import com.example.tpueco.domain.adapter.MailGroupsAdapter
+import com.example.tpueco.presentation.adapter.MailAdapter
+import com.example.tpueco.domain.mail.MailReceiveWorker
 import com.example.tpueco.presentation.VM.MailViewModel
 
 
@@ -50,7 +48,7 @@ class MailFragment : Fragment() {
         mailRecyclerView = requireView().findViewById(R.id.mailRecyclerView)
         mailRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mailRecyclerView.adapter = mailAdapter
-        mailAdapter.updateAdapter(MainActivity.messageGroups.get(pos))
+        mailAdapter.updateAdapter(MailReceiveWorker.messageGroups[pos])
     }
 
 }

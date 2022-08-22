@@ -1,4 +1,4 @@
-package com.example.tpueco.domain.adapter
+package com.example.tpueco.presentation.adapter
 
 import android.content.Context
 import android.content.Intent

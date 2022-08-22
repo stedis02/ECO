@@ -12,10 +12,10 @@ class App : Application() {
 
     companion object {
         var authorizeСode: String = ""
-        val API_KEY: String = "8f0afb6b47e2193836a95aaf9dea703c"
-        val CLIENT_ID: String = "39"
-        val CLIENT_SECRET: String = "Z-t-6hwS"
-        val GRANT_TYPE: String = "authorization_code"
+        const val apiKey: String = "8f0afb6b47e2193836a95aaf9dea703c"
+        const val CLIENT_ID: String = "39"
+        const val CLIENT_SECRET: String = "Z-t-6hwS"
+        const val GRANT_TYPE: String = "authorization_code"
         var fullUserTokenUrl: String = ""
     }
 

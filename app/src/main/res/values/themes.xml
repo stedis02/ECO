@@ -23,6 +23,8 @@
         <item name="colorAccent">@color/BaseAppGreen</item>
     </style>
 
+
+
     <style name="Theme.TestovoeGit.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.TestovoeGit.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

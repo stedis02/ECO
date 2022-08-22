@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tpueco.R
 import com.example.tpueco.data.db.DBManager
-import com.example.tpueco.domain.adapter.PdfDocumentsGroupAdapter
+import com.example.tpueco.presentation.adapter.PdfDocumentsGroupAdapter
 import com.example.tpueco.domain.tools.Document.DocumentManager
 import com.example.tpueco.presentation.CameraActivity
 import com.example.tpueco.presentation.VM.DocumentCameraViewModel
@@ -71,7 +71,7 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(p0: View?) {
         if (translateButtonIdToIndex(p0!!.id) == 1) {
-            if (pdfDocumentFileName.text.toString() == "введите имя нового документа"
+            if (pdfDocumentFileName.text.toString().isEmpty()
                 || pdfDocumentFileName.text.toString() == ""
             ) {
                 Toast.makeText(requireContext(), "Введите имя файла!", Toast.LENGTH_SHORT).show()

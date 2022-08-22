@@ -3,30 +3,23 @@ package com.example.tpueco.presentation.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tpueco.MainActivity
 import com.example.tpueco.R
-import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.domain.Model.Message
-import com.example.tpueco.domain.adapter.MailGroupsAdapter
-import com.example.tpueco.domain.mail.Mailer
-import com.example.tpueco.domain.mail.MessageParser
+import com.example.tpueco.presentation.adapter.MailGroupsAdapter
 import com.example.tpueco.presentation.VM.MailMainViewModel
 
-class MailMainFragment : Fragment(), View.OnClickListener {
+class MailMainFragment : Fragment() {
 
     lateinit var mailGroupsAdapter: MailGroupsAdapter
     lateinit var mailMainRecyclerView: RecyclerView
@@ -60,7 +53,6 @@ class MailMainFragment : Fragment(), View.OnClickListener {
         mailMainRecyclerView = requireView().findViewById(R.id.mailMainRecycler)
         mailMainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mailMainRecyclerView.adapter = mailGroupsAdapter
-        getItemTouchHelper().attachToRecyclerView(mailMainRecyclerView)
         activity?.let {
             groupLive.observe(it, Observer {
                 mailGroupsAdapter.updateAdapter(it)
@@ -69,27 +61,6 @@ class MailMainFragment : Fragment(), View.OnClickListener {
         }
 
 
-    }
-
-
-    private fun getItemTouchHelper(): ItemTouchHelper {
-        return ItemTouchHelper(object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                @NonNull recyclerView: RecyclerView,
-                @NonNull viewHolder: RecyclerView.ViewHolder,
-                @NonNull target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(@NonNull viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-            }
-        })
-    }
-
-    override fun onClick(p0: View?) {
     }
 
 
