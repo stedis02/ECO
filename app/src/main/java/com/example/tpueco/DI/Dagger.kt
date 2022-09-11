@@ -15,7 +15,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.Executors
 import kotlin.properties.Delegates.notNull
 
 @Component(modules = [AppModule::class])
@@ -57,6 +56,7 @@ class AppModule{
 internal interface DocumentFeatureComponent{
     fun inject(fragment: DocumentCameraFragment)
     fun inject(fragment: MailMainFragment)
+
 
     @Component.Builder
     interface Builder{

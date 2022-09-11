@@ -9,24 +9,22 @@ import com.example.tpueco.data.Network.UsersAPI
 import com.example.tpueco.presentation.fragment.DocumentCameraFragment
 
 class App : Application() {
-    lateinit var usersAPI: UsersAPI
 
     companion object {
-        var oauthTpuCheck: Boolean = false
         var authorizeСode: String = ""
-        val API_KEY: String = "8f0afb6b47e2193836a95aaf9dea703c"
-        var ACCESS_TOKEN: String = ""
-        val CLIENT_ID: String = "39"
-        val CLIENT_SECRET: String = "Z-t-6hwS"
-        val GRANT_TYPE: String = "authorization_code"
+        const val apiKey: String = "8f0afb6b47e2193836a95aaf9dea703c"
+        const val CLIENT_ID: String = "39"
+        const val CLIENT_SECRET: String = "Z-t-6hwS"
+        const val GRANT_TYPE: String = "authorization_code"
         var fullUserTokenUrl: String = ""
     }
 
-    val appComponent: AppComponent by lazy{
+    val appComponent: AppComponent by lazy {
         DaggerAppComponent.builder()
             .context(context = this)
             .build()
     }
+
     override fun onCreate() {
         super.onCreate()
         DocumentDepsStore.deps = appComponent
@@ -35,8 +33,8 @@ class App : Application() {
     }
 }
 
-val Context.appComponent : AppComponent
-    get() = when(this){
+val Context.appComponent: AppComponent
+    get() = when (this) {
         is App -> appComponent
         else -> this.applicationContext.appComponent
     }

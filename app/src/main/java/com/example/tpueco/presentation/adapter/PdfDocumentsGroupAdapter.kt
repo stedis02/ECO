@@ -1,25 +1,20 @@
-package com.example.tpueco.domain.adapter
+package com.example.tpueco.presentation.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tpueco.R
 import com.example.tpueco.data.db.DBManager
 import com.example.tpueco.domain.tools.Document.Document
-import com.example.tpueco.domain.tools.Document.DocumentManager
 import java.io.File
 
 class PdfDocumentsGroupAdapter(var context: Context) :
@@ -46,21 +41,21 @@ class PdfDocumentsGroupAdapter(var context: Context) :
         notifyDataSetChanged()
     }
 
-    fun removeItemFromDataBase(position: Int, dbManager: DBManager){
-        Log.v("aaa", position.toString())
+    fun removeItemFromDataBase(position: Int, dbManager: DBManager) {
         dbManager.deletePdfDocument(pdfDocumentsGroup.get(position).documentId.toString())
     }
 
-    class MainViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+    class MainViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
 
-        var pdfDocumentNameView: TextView = itemView.findViewById(R.id.pdfDocumentNameId)
-        val sendPDFDocument: Button = itemView.findViewById(R.id.sendDocumentButtom)
+        var pdfDocumentNameView: TextView = itemView.findViewById(R.id.mailMainHeader)
+        private val sendPDFDocument: Button = itemView.findViewById(R.id.sendDocumentButtom)
         var context: Context
         lateinit var pdfDocumentName: String
 
         init {
             sendPDFDocument.setOnClickListener(this)
-           this.context = context
+            this.context = context
         }
 
         fun setData(pdfDocumentName: String) {
@@ -69,22 +64,21 @@ class PdfDocumentsGroupAdapter(var context: Context) :
         }
 
 
-
-
-
-
         override fun onClick(p0: View?) {
-           sendPDFDocument(context, pdfDocumentName)
+            sharePDFDocument(context, pdfDocumentName)
         }
 
-        private fun sendPDFDocument(context: Context, pdfDocumentName: String) {
+        private fun sharePDFDocument(context: Context, pdfDocumentName: String) {
             val file = File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + File.separator + pdfDocumentName
             )
 
             var pdfUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName().toString() + ".provider",
-                    file)
+                FileProvider.getUriForFile(
+                    context,
+                    context.applicationContext.packageName.toString() + ".provider",
+                    file
+                )
             } else {
                 Uri.fromFile(file)
             }

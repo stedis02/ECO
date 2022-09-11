@@ -1,5 +1,6 @@
 package com.example.tpueco.presentation.VM
 
+import android.annotation.SuppressLint
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -14,8 +15,9 @@ class StartBrowserViewModel : ViewModel() {
     val resultAuthorizeCodeForUrl = MutableLiveData<String>()
 
 
+    @SuppressLint("SetJavaScriptEnabled")
     fun getOauthTpu(webView: WebView) {
-        webView.settings.setJavaScriptEnabled(true)
+        webView.settings.javaScriptEnabled = true
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 view?.loadUrl(redirectUrl)

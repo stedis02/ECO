@@ -6,7 +6,7 @@
     android:layout_height="80dp">
 
     <TextView
-        android:id="@+id/pdfDocumentNameId"
+        android:id="@+id/mailMainHeader"
         android:layout_width="220dp"
         android:layout_height="24dp"
         android:text="TextView"
@@ -23,7 +23,7 @@
         android:text="s"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/pdfDocumentNameId"
+        app:layout_constraintStart_toEndOf="@+id/mailMainHeader"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -31,7 +31,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/pdfDocumentNameId"
+        app:layout_constraintEnd_toStartOf="@+id/mailMainHeader"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_pdf_svgrepo_com"

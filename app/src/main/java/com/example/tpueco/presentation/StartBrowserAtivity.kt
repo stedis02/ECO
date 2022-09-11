@@ -32,7 +32,7 @@ class StartBrowserAtivity : AppCompatActivity() {
         })
     }
 
-    companion object{
+    companion object {
         private const val TAG = "AuthorizeCode"
     }
 

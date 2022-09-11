@@ -2,6 +2,7 @@ package com.example.tpueco.presentation.fragment
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
@@ -18,8 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tpueco.R
 import com.example.tpueco.data.db.DBManager
-import com.example.tpueco.domain.adapter.PdfDocumentsGroupAdapter
-import com.example.tpueco.domain.mail.Mailer
+import com.example.tpueco.presentation.adapter.PdfDocumentsGroupAdapter
 import com.example.tpueco.domain.tools.Document.DocumentManager
 import com.example.tpueco.presentation.CameraActivity
 import com.example.tpueco.presentation.VM.DocumentCameraViewModel
@@ -54,9 +55,9 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
         dbManager = DBManager(requireContext())
         dbManager.dbOpen()
         documentManager = DocumentManager()
-        pdfDocumentFileName = requireView().findViewById<EditText>(R.id.pdfDocumentNameId)
+        pdfDocumentFileName = requireView().findViewById<EditText>(R.id.mailMainHeader)
         pdfDocumentsGroupAdapter = PdfDocumentsGroupAdapter(requireContext())
-        pdfDocumentRecyclerView = requireView().findViewById(R.id.DocumentRecycler)
+        pdfDocumentRecyclerView = requireView().findViewById(R.id.mailMainRecycler)
         pdfDocumentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         pdfDocumentRecyclerView.adapter = pdfDocumentsGroupAdapter
         pdfDocumentsGroupAdapter.updateAdapter(dbManager.getPdfDocument())
@@ -70,7 +71,7 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(p0: View?) {
         if (translateButtonIdToIndex(p0!!.id) == 1) {
-            if (pdfDocumentFileName.text.toString() == "введите имя нового документа"
+            if (pdfDocumentFileName.text.toString().isEmpty()
                 || pdfDocumentFileName.text.toString() == ""
             ) {
                 Toast.makeText(requireContext(), "Введите имя файла!", Toast.LENGTH_SHORT).show()
@@ -103,6 +104,7 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
                 return false
             }
 
+            @RequiresApi(Build.VERSION_CODES.Q)
             override fun onSwiped(@NonNull viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 deletePDFDocumentFromDataBaseAndStorage(viewHolder)
                 pdfDocumentsGroupAdapter.updateAdapter(dbManager.getPdfDocument())
@@ -110,6 +112,7 @@ class DocumentCameraFragment : Fragment(), View.OnClickListener {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun deletePDFDocumentFromDataBaseAndStorage(viewHolder: RecyclerView.ViewHolder) {
         documentManager.deleteFileUsingDisplayName(
             requireContext(),

@@ -155,7 +155,7 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    fun savePdfDocumentNameInDataBase(pdfDocumentName: String){
+    fun savePdfDocumentNameInDataBase(pdfDocumentName: String) {
         dbManager.dbOpen()
         dbManager.dbInsertPdfDocument(pdfDocumentName)
         dbManager.dbClose()

@@ -6,8 +6,10 @@ import android.database.Cursor
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import java.io.*
 
 
@@ -18,11 +20,11 @@ class DocumentManager {
     fun addPageToDocumentPdf(context: Context , pdfDocument: PdfDocument , pageNumber: Int, bitmap: Bitmap) {
         val paint = Paint()
         val pageInfo = PdfDocument.PageInfo.Builder(3000, 4000, pageNumber).create()
-        var page1 = pdfDocument.startPage(pageInfo)
-        var canvas = page1.canvas
-        var matrix = Matrix()
+        val page1 = pdfDocument.startPage(pageInfo)
+        val canvas = page1.canvas
+        val matrix = Matrix()
         matrix.postRotate(90.0f)
-        var bitmapRot = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        val bitmapRot = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
         canvas.drawBitmap(bitmapRot, 0.0f, 0.0f, paint)
         pdfDocument.finishPage(page1)
 
@@ -47,24 +49,24 @@ class DocumentManager {
         pdfDocument.writeTo(outputStream)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun deleteFileUsingDisplayName(context: Context, displayName: String) {
         val uri: Uri = getUriFromDisplayName(context, displayName)!!
-        if (uri != null) {
-            val resolver = context.contentResolver
-            val selectionArgsPdf = arrayOf(displayName)
-            try {
-                resolver.delete(
-                    uri,
-                    MediaStore.Files.FileColumns.DISPLAY_NAME + "=?",
-                    selectionArgsPdf
-                )
+        val resolver = context.contentResolver
+        val selectionArgsPdf = arrayOf(displayName)
+        try {
+            resolver.delete(
+                uri,
+                MediaStore.Files.FileColumns.DISPLAY_NAME + "=?",
+                selectionArgsPdf
+            )
 
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun getUriFromDisplayName(context: Context, displayName: String): Uri? {
         val projection: Array<String> = arrayOf(MediaStore.Files.FileColumns._ID)
         val cursor: Cursor = context.contentResolver.query(
